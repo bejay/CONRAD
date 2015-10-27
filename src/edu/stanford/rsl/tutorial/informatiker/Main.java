@@ -11,7 +11,7 @@ public class Main {
 		phantom.show();
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
-		MyDetector detector = new MyDetector( 360, 1.0, 401, phantom );
+		MyDetector detector = new MyDetector( 360, 1.0, 1024, phantom );
 		detector.show();
 		
 	}

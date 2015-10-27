@@ -19,9 +19,9 @@ public class MyDetector extends Grid2D {
 	MyPhantom phantom;
 	
 	// constructor
-	public MyDetector(int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom) {
+	public MyDetector( int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom ) {
 		
-		super(numProjections, numDetectorPixels);
+		super( numProjections, numDetectorPixels );
 		this.numProjections = numProjections;
 		this.detectorSpacing = detectorSpacing;
 		this.numDetectorPixels = numDetectorPixels;
@@ -45,7 +45,7 @@ public class MyDetector extends Grid2D {
 		// iterate over all angles
 		for( int i = 0; i < numProjections; ++i ) {
 		
-			theta = 180 / numProjections * i;
+			theta = 180.0 / numProjections * i;
 
 			// iterate over all detector positions
 			for( int j = 0; j < numDetectorPixels; j++ ) {
@@ -64,12 +64,12 @@ public class MyDetector extends Grid2D {
 				
 				// special case theta == 0, 90 degrees to avoid division by zero
 				// actually eclipse gives no error, but result is equal to infinity
-				if( Math.abs(theta) < epsilon ) {
+				if( Math.abs( theta ) < epsilon ) {
 					
 					start = new Point2D( s + delta_x, 0 );
 					end = new Point2D( s + delta_x, delta_y * 2 );
 					
-				} else if ( Math.abs(theta - 90) < epsilon) {
+				} else if ( Math.abs( theta - 90 ) < epsilon) {
 					
 					start = new Point2D( delta_x * 2, delta_y + s );
 					end = new Point2D( 0, delta_y + s );
@@ -106,25 +106,24 @@ public class MyDetector extends Grid2D {
 						double x = delta_y / Math.tan( Math.toRadians( theta - 90 ) );
 
 						// hits bottom border
-						if ( x + detector_pos - delta_x < epsilon ) {
-							start = new Point2D( x + delta_x + detector_pos, 2*delta_y );
+						if ( x - detector_pos - delta_x < epsilon ) {
+							start = new Point2D( x + delta_x - detector_pos, 2*delta_y );
 						// hits right border
 						} else {
-							double y = (delta_x - detector_pos) * Math.tan( Math.toRadians( theta - 90 ) );
+							double y = (delta_x + detector_pos) * Math.tan( Math.toRadians( theta - 90 ) );
 							start = new Point2D( 2*delta_x, delta_y + y );
 						}
 						// hits top border						
-						if ( x - detector_pos - delta_x < epsilon ) {
-							end = new Point2D( delta_x - x + detector_pos, 0 );
+						if ( x + detector_pos - delta_x < epsilon ) {
+							end = new Point2D( delta_x - x - detector_pos, 0 );
 						// hits left border
 						} else {
-							double y = ( delta_x + detector_pos ) * Math.tan( Math.toRadians( theta - 90 ) );
+							double y = ( delta_x - detector_pos ) * Math.tan( Math.toRadians( theta - 90 ) );
 							end = new Point2D( 0, delta_y - y );
 						}
 					}
 				}
 
-				
 				// line integral what are we using for the stepsize?
 				double max_steps = delta_x*4;
 				double current_pos_x = 0;
@@ -143,7 +142,7 @@ public class MyDetector extends Grid2D {
 				// write new value into the sinogram
 				setAtIndex( i, j, detector_value );
 //				show_line(start, end);
-//				System.out.println(detector_value);
+				
 			}
 		}
 

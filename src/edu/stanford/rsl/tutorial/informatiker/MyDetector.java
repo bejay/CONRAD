@@ -21,7 +21,6 @@ public class MyDetector extends Grid2D {
 
 	
 	// constructor
-<<<<<<< HEAD
 	public MyDetector(int numProjections, double detectorSpacing,
 			int numDetectorPixels, MyPhantom phantom) {
 
@@ -29,11 +28,6 @@ public class MyDetector extends Grid2D {
 		setSpacing(detectorSpacing, Math.PI / numProjections);
 		setOrigin(-(numDetectorPixels-1)*0.5*detectorSpacing, 0);
 		
-=======
-	public MyDetector( int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom ) {
-		
-		super( numProjections, numDetectorPixels );
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 		this.numProjections = numProjections;
 		this.detectorSpacing = detectorSpacing;
 		this.numDetectorPixels = numDetectorPixels;
@@ -56,13 +50,7 @@ public class MyDetector extends Grid2D {
 		Point2D end; // perpendicular to the detector
 
 		// iterate over all angles
-<<<<<<< HEAD
 		for (int i = 0; i < numProjections; ++i) {
-=======
-		for( int i = 0; i < numProjections; ++i ) {
-		
-			theta = 180.0 / numProjections * i;
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 
 			theta = this.indexToPhysical(0, i)[1];
 			
@@ -79,7 +67,6 @@ public class MyDetector extends Grid2D {
 				// the detector origin is said to be in the middle of the phantom
 
 				// special case theta == 0, 90 degrees to avoid division by zero
-<<<<<<< HEAD
 				// actually eclipse throws no error, but result is equal to
 				// infinity
 				if (Math.abs(theta) < epsilon) {
@@ -90,19 +77,6 @@ public class MyDetector extends Grid2D {
 					start = new Point2D(delta_x, s);
 					end = new Point2D(-delta_x, s);
 
-=======
-				// actually eclipse gives no error, but result is equal to infinity
-				if( Math.abs( theta ) < epsilon ) {
-					
-					start = new Point2D( s + delta_x, 0 );
-					end = new Point2D( s + delta_x, delta_y * 2 );
-					
-				} else if ( Math.abs( theta - 90 ) < epsilon) {
-					
-					start = new Point2D( delta_x * 2, delta_y + s );
-					end = new Point2D( 0, delta_y + s );
-					
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 				} else {
 
 					// differentiate between < 90 and > 90 degrees
@@ -141,7 +115,6 @@ public class MyDetector extends Grid2D {
 								/ Math.tan(theta - rad90);
 
 						// hits bottom border
-<<<<<<< HEAD
 						if (x + detector_pos - delta_x < epsilon) {
 							start = new Point2D(x + detector_pos, delta_y);
 						
@@ -174,31 +147,6 @@ public class MyDetector extends Grid2D {
 				// Unit direction vector
 				double step_x = (end.getX() - start.getX()) / Math.abs(end.getX() - start.getX());
 				double step_y = (end.getY() - start.getY()) / Math.abs(end.getY() - start.getY());
-=======
-						if ( x - detector_pos - delta_x < epsilon ) {
-							start = new Point2D( x + delta_x - detector_pos, 2*delta_y );
-						// hits right border
-						} else {
-							double y = (delta_x + detector_pos) * Math.tan( Math.toRadians( theta - 90 ) );
-							start = new Point2D( 2*delta_x, delta_y + y );
-						}
-						// hits top border						
-						if ( x + detector_pos - delta_x < epsilon ) {
-							end = new Point2D( delta_x - x - detector_pos, 0 );
-						// hits left border
-						} else {
-							double y = ( delta_x - detector_pos ) * Math.tan( Math.toRadians( theta - 90 ) );
-							end = new Point2D( 0, delta_y - y );
-						}
-					}
-				}
-
-				// line integral what are we using for the stepsize?
-				double max_steps = delta_x*4;
-				double current_pos_x = 0;
-				double current_pos_y = 0;
-				float detector_value = 0; //
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 				
 				// STEP SIZE in [mm]
 				double step_size = 1.0;
@@ -228,14 +176,8 @@ public class MyDetector extends Grid2D {
 				}
 				
 				// write new value into the sinogram
-<<<<<<< HEAD
 				setAtIndex(j, i, detector_value);
 				// show_line(start, end);
-=======
-				setAtIndex( i, j, detector_value );
-//				show_line(start, end);
-				
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 			}
 		}
 	}

@@ -25,28 +25,16 @@ public class MyPhantom extends Grid2D {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (Math.abs(x - cx) * Math.abs(x - cx) + Math.abs(y - cy) * Math.abs(y - cy) < r) {
-<<<<<<< HEAD
 					setAtIndex(x, y, 2f);
-=======
-					setAtIndex(x, y, 5f);
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 				}
 			}
 		}
 
 		// Draw a line at the top border
-<<<<<<< HEAD
 		for (int x = 67; x < 600; x++) {
 			for (int y = 0; y < 16; y++) {
 				setAtIndex(x, y, 0.25f);
 			}
 		}
-=======
-		for (int x = 67; x < 555; x++) {
-				for (int y = 0; y < 16; y++) {
-					setAtIndex(x, y, 0.75f);
-				}
-			}
->>>>>>> 639838c9721f867ddc268b0664cc3922966a2a21
 	}
 }

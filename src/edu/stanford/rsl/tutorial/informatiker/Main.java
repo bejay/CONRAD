@@ -1,18 +1,22 @@
 package edu.stanford.rsl.tutorial.informatiker;
 
 
-//import ij.IJ;
-//import ij.plugin.PlugIn;
+import ij.ImageJ;
+
 
 public class Main {
 	public static void main( String[] args ) {
 		
-		MyPhantom phantom = new MyPhantom( 641, 641 );
+		
+//		new ImageJ();
+		MyPhantom phantom = new MyPhantom( 600, 600, 1, 1);
 		phantom.show();
 		
-		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
-		MyDetector detector = new MyDetector( 360, 1.0, 401, phantom );
-		detector.show();
 		
+		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
+		MyDetector detector = new MyDetector( 360, 1, 1024, phantom );
+		detector.show();
+
+
 	}
 }

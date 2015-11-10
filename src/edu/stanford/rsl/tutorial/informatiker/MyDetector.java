@@ -164,20 +164,18 @@ public class MyDetector extends Grid2D {
 					step_y = 0.0;
 				}
 				// walk down the line and add up phantom values
-				for (int k = 0; k <= (int) max_steps-2; ++k) {
+				for (int k = 0; k <= (int) max_steps; ++k) {
 		
 					
 					current_pos_x += step_x * step_size_x;
 					current_pos_y += step_y * step_size_y;
 					double[] p = phantom.physicalToIndex(current_pos_x, current_pos_y);
-					detector_value += InterpolationOperators.interpolateLinear(
-							(Grid2D) phantom, p[0], p[1]);
+					detector_value += InterpolationOperators.interpolateLinear(phantom, p[0], p[1]);
 
 				}
 				
 				// write new value into the sinogram
 				setAtIndex(j, i, detector_value);
-				// show_line(start, end);
 			}
 		}
 	}
@@ -207,12 +205,11 @@ public class MyDetector extends Grid2D {
 			linePhantom.setAtIndex(300, l, 5f);
 			linePhantom.setAtIndex(l, 300, 5f);
 		}
-		for (int k = 0; k <= (int) max_steps-2; ++k) {
-
-			
+		for (int k = 0; k <= (int) max_steps; ++k) {
 			current_pos_x += step_x * step_size_x;
 			current_pos_y += step_y * step_size_y;
 			double[] p = phantom.physicalToIndex(current_pos_x, current_pos_y);
+			if(p[0] <= 0 || p[1] <= 0) continue; //setAtIndex checks for values > size but not < 0
 			linePhantom.setAtIndex((int)p[0], (int)p[1], 10f);
 		}
 		linePhantom.show();

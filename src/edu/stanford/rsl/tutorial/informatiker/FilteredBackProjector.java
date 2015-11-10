@@ -27,6 +27,8 @@ public class FilteredBackProjector extends Grid2D {
 		this.sinogram = sinogram;
 		this.filter = filter;
 		filteredData = new Grid2D(sinogram.getSize()[0], sinogram.getSize()[1]);
+		filteredData.setSpacing(sinogram.getSpacing());
+		filteredData.setOrigin(sinogram.getOrigin());
 		
 		delta_x = phantom.getWidth() * 0.5 * phantom.getSpacing()[0];
 		delta_y = phantom.getHeight() * 0.5* phantom.getSpacing()[1];
@@ -68,146 +70,40 @@ public class FilteredBackProjector extends Grid2D {
 	
 	void backproject() {
 		
-		double theta = 0; // angle theta between 0 and 180 degrees
-		double s = 0; // position on the detector between -sd ... 0 ... +sd
-		double detector_pos = 0; // Equivalent detector position at the x-axes
-		double rad90 = Math.PI*0.5; // 90 degrees in radians
-		Point2D start; // start and end position of the ray within the phantom grid
-		Point2D end; // perpendicular to the detector
-
-		// iterate over all angles
-		for (int i = 0; i < sinogram.getHeight(); ++i) {
-
-			theta = this.indexToPhysical(0, i)[1];
+		// for all rows in phantom
+		for( int i = 0; i < this.getWidth(); ++i ) {
 			
-			// iterate over all detector positions
-			for (int j = 0; j < sinogram.getWidth(); ++j) {
-
-				s = this.indexToPhysical(j, 0)[0];
+			// for all cols in phantom
+			for( int j = 0; j < this.getHeight(); ++j ) {
 				
-				// calculate starting and ending Point within bounding box
-				// coordinates are double values, they do not have to be exactly
-				// on the borders
-
-				// all coordinates are given in the phantom space in World Coordinates
-				// the detector origin is said to be in the middle of the phantom
-
-				// special case theta == 0, 90 degrees to avoid division by zero
-				// actually eclipse throws no error, but result is equal to
-				// infinity
-				if (Math.abs(theta) < epsilon) {
-					start = new Point2D(s, -delta_y);
-					end = new Point2D(s, delta_y);
-
-				} else if (Math.abs(theta - rad90) < epsilon) {
-					start = new Point2D(delta_x, s);
-					end = new Point2D(-delta_x, s);
-
-				} else {
-
-					// differentiate between < 90 and > 90 degrees
-					if (theta - rad90 < epsilon) {
-						
-						detector_pos = s / Math.cos(theta);
-						double x = delta_y / Math.tan(rad90 - theta);
-
-						// hits top border
-						if (x + detector_pos - delta_x < epsilon) {
-							start = new Point2D(x + detector_pos, -delta_y);
-						
-						// hits right border
-						} else {
-							double y = (delta_x - detector_pos)
-									* Math.tan(rad90 - theta);
-							start = new Point2D(delta_x, -y);
-						}
-						
-						// hits bottom border
-						if (x - detector_pos - delta_x < epsilon) {
-							end = new Point2D(-x + detector_pos, delta_y);
-						
-						// hits left border
-						} else {
-							double y = (delta_x + detector_pos)
-									* Math.tan(rad90 - theta);
-							end = new Point2D(-delta_x, y);
-						}
-						
-
+				float detector_value = 0f;
+				
+				// for all angles theta
+				// calculate the detector position and add up the values
+				for( int k = 0; k < sinogram.getHeight(); ++k ) {
+					
+					double theta = filteredData.indexToPhysical(0, k)[1];
+					double s = 0.;
+					
+					if (Math.abs(theta - Math.PI * 0.5) < epsilon) {
+						s = this.indexToPhysical(i, j)[1];
 					} else {
-
-						detector_pos = -s / Math.cos(Math.PI - theta);
-						double x = delta_y
-								/ Math.tan(theta - rad90);
-
-						// hits bottom border
-						if (x + detector_pos - delta_x < epsilon) {
-							start = new Point2D(x + detector_pos, delta_y);
-						
-						// hits right border
-						} else {
-							double y = (delta_x - detector_pos)
-									* Math.tan(theta - rad90);
-							start = new Point2D( delta_x, y );
-						}
-						
-						// hits top border
-						if (x - detector_pos - delta_x < epsilon) {
-							end = new Point2D( -x + detector_pos, -delta_y );
-						
-						// hits left border
-						} else {
-							double y = (delta_x + detector_pos)
-									* Math.tan(theta - rad90);
-							end = new Point2D( -delta_x, -y );
-						}
+						s = this.indexToPhysical(i, j)[0] / Math.cos(theta);
 					}
-				}		
-							
-				// summing up the line integral
-				double[] det = physicalToIndex(s, theta);
-				float detector_value = filteredData.getAtIndex((int)det[0], (int)det[1]);
-				
-				double current_pos_x = start.getX();
-				double current_pos_y = start.getY();
-								
-				// Unit direction vector
-				double step_x = (end.getX() - start.getX()) / Math.abs(end.getX() - start.getX());
-				double step_y = (end.getY() - start.getY()) / Math.abs(end.getY() - start.getY());
-				
-				// STEP SIZE in [mm]
-				double step_size = 1.0;
-				double step_size_x = step_size * Math.abs(end.getX() - start.getX()) / (Math.abs(end.getX() - start.getX()) + Math.abs(end.getY() - start.getY()));
-				double step_size_y = step_size * Math.abs(end.getY() - start.getY()) / (Math.abs(end.getX() - start.getX()) + Math.abs(end.getY() - start.getY()));
-								
-				double max_steps = Math.abs(end.getX() - start.getX()) / step_size_x;
-				// end.getX() - start.getX() == 0 --> theta = 0
-				if(Math.abs(step_size_x) < epsilon) {
-					max_steps = Math.abs(end.getY() - start.getY()) / step_size_y;
-					step_x = 0.0;
-				}
-				// end.getX() - start.getX() == 0 --> theta = 0
-				if(Math.abs(step_size_y) < epsilon) {
-					step_y = 0.0;
-				}
-				// walk down the line and add up phantom values
-				for (int k = 2; k <= (int) max_steps-5; ++k) {
-		
-					current_pos_x += step_x * step_size_x;
-					current_pos_y += step_y * step_size_y;
+					System.out.printf("i: %s ,j: %s ,theta: %s ,s: %s \n", i,j,theta/Math.PI*180,s);
+					// biliniear interpolation --> linear interpolation is sufficient
+					double[] pos = filteredData.physicalToIndex(s, theta);
+					System.out.printf("%s  %s    %s\n", pos[0],pos[1], InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]));
+					detector_value += InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]);
 					
-					
-					double[] p = this.physicalToIndex(current_pos_x, current_pos_y);
-					System.out.printf("%s  %s \n", p[0], p[1]);
-					this.addAtIndex((int)p[0], (int)p[1], detector_value);
-//					
-//					detector_value += InterpolationOperators.interpolateLinear(
-//							(Grid2D) phantom, p[0], p[1]);
-
 				}
+				this.setAtIndex(i, j, detector_value);
+			break;
 			}
+			break;
 		}
 		this.show();
+	
 	}
 	
 

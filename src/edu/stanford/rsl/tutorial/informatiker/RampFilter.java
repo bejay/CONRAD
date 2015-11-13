@@ -24,7 +24,7 @@ public class RampFilter extends Grid1DComplex {
 		}
 
 		// to illustrate only the Real part, imaginary part is zero		
-		//this.getRealSubGrid(0, this.getSize()[0]).show();
+		this.getRealSubGrid(0, this.getSize()[0]).show("RampFilter");
 	
 	}
 

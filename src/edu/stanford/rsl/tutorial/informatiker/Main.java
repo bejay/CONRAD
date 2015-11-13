@@ -19,7 +19,7 @@ public class Main {
 		
 		
 		
-//		new ImageJ();
+		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
 //		phantom.show();
 		

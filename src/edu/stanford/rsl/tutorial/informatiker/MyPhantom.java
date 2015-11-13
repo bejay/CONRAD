@@ -12,11 +12,11 @@ public class MyPhantom extends Grid2D {
 		
 		
 		// Draw a square with size 100,100 with center 150,150
-//		for (int x = 100; x <= 200; x++) {
-//			for (int y = 100; y <= 200; y++) {
-//				setAtIndex(x, y, 0.5f);
-//			}
-//		}
+		for (int x = 100; x <= 200; x++) {
+			for (int y = 100; y <= 200; y++) {
+				setAtIndex(x, y, 0.5f);
+			}
+		}
 
 		// Draw a circle at cx, cy with radius sqrt(r)
 		int cx = 250;
@@ -31,10 +31,10 @@ public class MyPhantom extends Grid2D {
 		}
 
 		// Draw a line at the top border
-//		for (int x = 67; x < 600; x++) {
-//			for (int y = 0; y < 16; y++) {
-//				setAtIndex(x, y, 0.25f);
-//			}
-//		}
+		for (int x = 67; x < 600; x++) {
+			for (int y = 0; y < 16; y++) {
+				setAtIndex(x, y, 0.25f);
+			}
+		}
 	}
 }

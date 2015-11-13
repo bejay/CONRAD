@@ -77,30 +77,42 @@ public class FilteredBackProjector extends Grid2D {
 			for( int j = 0; j < this.getHeight(); ++j ) {
 				
 				float detector_value = 0f;
+//				double x = this.indexToPhysical(i, j)[0];
+//				double y = this.indexToPhysical(i, j)[1];
+//				double detector_pos = (Math.sqrt(y*y+x*x)*Math.signum(x))/(Math.cos(Math.atan(y/x)));
 				
 				// for all angles theta
 				// calculate the detector position and add up the values
 				for( int k = 0; k < sinogram.getHeight(); ++k ) {
 					
 					double theta = filteredData.indexToPhysical(0, k)[1];
-					double s = 0.;
 					
-					if (Math.abs(theta - Math.PI * 0.5) < epsilon) {
-						s = this.indexToPhysical(i, j)[1];
-					} else {
-						s = this.indexToPhysical(i, j)[0] / Math.cos(theta);
+					// calculate intersection between detector line d=(0,0)+a(cos(theta),-sin(theta))
+					// and line through point p othorgonal to d
+					// s = xcos(theta)-sin(theta) (cos(theta), -sin(theta)
+					double val = indexToPhysical(i, j)[0] * Math.cos(theta) + indexToPhysical(i, j)[1] * Math.sin(theta);
+					double s_x = val * Math.cos(theta);
+					double s_y = val * Math.sin(theta);
+					double s = Math.sqrt(s_x*s_x + s_y*s_y);
+					if(Math.abs(Math.signum(s_y)) != 0 ) {
+						s = s * Math.signum(s_y);
+					} else if( Math.abs(Math.signum(s_x)) != 0 ) {
+						s = s * Math.signum(s_x);
 					}
-					System.out.printf("i: %s ,j: %s ,theta: %s ,s: %s \n", i,j,theta/Math.PI*180,s);
+//					System.out.printf("x: %s, y: %s\n", indexToPhysical(i, j)[0], indexToPhysical(i, j)[1]);
+//					System.out.printf("s_x: %s, s_y: %s signum:%s %s\n", s_x, s_y,Math.signum(s_y),Math.signum(s_x));
+
+//					System.out.printf("i: %s ,j: %s ,theta: %s ,s: %s \n", i,j,theta/Math.PI*180,s);
 					// biliniear interpolation --> linear interpolation is sufficient
 					double[] pos = filteredData.physicalToIndex(s, theta);
-					System.out.printf("%s  %s    %s\n", pos[0],pos[1], InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]));
+//					System.out.printf("%s  %s    %s\n", pos[0],pos[1], InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]));
 					detector_value += InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]);
 					
 				}
 				this.setAtIndex(i, j, detector_value);
-			break;
+//			break;
 			}
-			break;
+//			break;
 		}
 		this.show();
 	

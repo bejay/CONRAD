@@ -21,20 +21,19 @@ public class Main {
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
-		phantom.show("Phantom");
-		
+//		phantom.show("Phantom");
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
 		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
-		detector.show("Sinogram");
+//		detector.show("Sinogram");
 		
 		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
 		
-		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
+//		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
 		
-		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter_spatial);
+//		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter_spatial);
 		
-		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(phantom, detector, rampfilter);
+//		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(phantom, detector, rampfilter);
 		
 
 

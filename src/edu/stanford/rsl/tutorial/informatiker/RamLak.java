@@ -25,6 +25,7 @@ public class RamLak extends Grid1DComplex {
 		this.transformForward();
 		// to illustrate only the Real part, imaginary part is zero		
 		this.getRealSubGrid(0, this.getSize()[0]).show("RampFilter_Spatial");
+		this.getImagSubGrid(0, this.getSize()[0]).show("RampFilter_Spatial_img");
 	
 	}
 

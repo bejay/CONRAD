@@ -13,20 +13,22 @@ public class RampFilter extends Grid1DComplex {
 		
 		super( numDetectorPixels );
 		
-		setSpacing( 1.0 / ( detectorSpacing * numDetectorPixels ) );
+		setSpacing( 1.0 / ( detectorSpacing * this.getSize()[0] ) );
 	
 		for( int i = 0; i < this.getSize()[0] >> 1; i++ ) {
-			double j = this.indexToPhysical(i);
-			setAtIndex( i, (float) j);
+//			double j = this.indexToPhysical(i);
+			setAtIndex( i, (float) i);
 		}
 		for( int i = (this.getSize()[0] >> 1); i < this.getSize()[0]; i++ ) {
-			double j = this.indexToPhysical(i);
-			setAtIndex( i, (float) (this.getSize()[0] - j));
+//			double j = this.indexToPhysical(i);
+			setAtIndex( i, (float) (this.getSize()[0] - i));
 		}
 
 		// to illustrate only the Real part, imaginary part is zero		
 		this.getRealSubGrid(0, this.getSize()[0]).show("RampFilter");
-	
+		
+		//
+		this.getImagSubGrid(0, this.getSize()[0]).show("RampFilter_img");
 	}
 
 }

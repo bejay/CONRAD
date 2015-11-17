@@ -16,11 +16,12 @@ public class RampFilter extends Grid1DComplex {
 		setSpacing( 1.0 / ( detectorSpacing * numDetectorPixels ) );
 	
 		for( int i = 0; i < this.getSize()[0] >> 1; i++ ) {
-			
-			setAtIndex( i, (float) i);
+			double j = this.indexToPhysical(i);
+			setAtIndex( i, (float) j);
 		}
 		for( int i = (this.getSize()[0] >> 1); i < this.getSize()[0]; i++ ) {
-			setAtIndex( i, this.getSize()[0] - i);
+			double j = this.indexToPhysical(i);
+			setAtIndex( i, (float) (this.getSize()[0] - j));
 		}
 
 		// to illustrate only the Real part, imaginary part is zero		

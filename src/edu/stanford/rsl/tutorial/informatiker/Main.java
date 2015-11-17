@@ -29,7 +29,13 @@ public class Main {
 		detector.show("Sinogram");
 		
 		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
-		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter);
+		
+		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
+		
+		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter_spatial);
+		
+		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(phantom, detector, rampfilter);
+		
 
 
 	}

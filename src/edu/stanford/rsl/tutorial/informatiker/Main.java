@@ -21,12 +21,12 @@ public class Main {
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
-//		phantom.show();
+		phantom.show("Phantom");
 		
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
 		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
-//		detector.show();
+		detector.show("Sinogram");
 		
 		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
 		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter);

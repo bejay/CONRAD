@@ -50,7 +50,7 @@ public class FilteredBackProjector extends Grid2D {
 			for( int j = 0; j < detectorRow.getSize()[0]; j++ ) {
 				
 				// Apply filtering 
-				// detectorRow.setAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getRealAtIndex(j));
+				 detectorRow.setAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getRealAtIndex(j));
 				// Complex Mutlitplication
 				detectorRow.setRealAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getRealAtIndex(j) - detectorRow.getImagAtIndex(j) * filter.getImagAtIndex(j));
 				detectorRow.setImagAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getImagAtIndex(j) + detectorRow.getImagAtIndex(j) * filter.getRealAtIndex(j));
@@ -109,10 +109,5 @@ public class FilteredBackProjector extends Grid2D {
 				this.setAtIndex(i, j, detector_value);
 			}
 		}
-		this.show("Backprojection");
-	
 	}
-	
-
-
 }

@@ -19,7 +19,7 @@ public class Main {
 		
 		
 		
-		new ImageJ();
+//		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
 //		phantom.show("Phantom");
 		
@@ -27,14 +27,20 @@ public class Main {
 		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
 //		detector.show("Sinogram");
 		
+		/* RAMPFILTER --- Filter defined in Frequency Domain */
 		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
-		
-//		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
-		
-//		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter_spatial);
-		
+		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
+
 //		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(phantom, detector, rampfilter);
+//		filterbackprojector2.show("Backprojection_ramp");
 		
+		/* RAMLAKFILTER --- Filter defined in Spatial Domain */
+		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
+		rampfilter_spatial.getRealSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
+		rampfilter_spatial.getImagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak_Imaginary");
+		
+		FilteredBackProjector filterbackprojector = new FilteredBackProjector(phantom, detector, rampfilter_spatial);
+		filterbackprojector.show("Backprojection_ramlak");
 
 
 	}

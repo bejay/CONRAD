@@ -10,29 +10,27 @@ public class RamLak extends Grid1DComplex {
 		
 		super( numDetectorPixels );
 		this.setSpacing(detectorSpacing);
-//		RamLak_Spatial.setOrigin(origin);
 
-		for(int i = 0; i < this.getSize()[0]; ++i) {
+		for(int i = 0; i < this.getSize()[0]/2; ++i) {
 
 			if(i == 0) {
-				setAtIndex( i, 0.25f);
+				setAtIndex( i, 0.25f*(float)detectorSpacing);
 			} else if( i%2 == 0) {
 				setAtIndex( i, 0.0f);
 			} else {
 				setAtIndex(i, (float) ((-1.0)/(detectorSpacing*detectorSpacing*i*i*Math.PI*Math.PI)));
 			}
 		}
-			
-//		for(int i = -(this.getSize()[0]>>1) + 1; i < this.getSize()[0]>>1; ++i) {
-//
-//			if(i == 0) {
-//				setAtIndex( i + this.getSize()[0]>>1, 0.25f);
-//			} else if( i%2 == 0) {
-//				setAtIndex( i + this.getSize()[0]>>1, 0.0f);
-//			} else {
-//				setAtIndex(i + this.getSize()[0]>>1, (float) ((-1.0)/(detectorSpacing*detectorSpacing*i*i*Math.PI*Math.PI)));
-//			}
-//		}
+		
+		for(int i = this.getSize()[0]/2; i < this.getSize()[0]; ++i) {
+			if(i == 0) {
+				setAtIndex( i, 0.25f*(float)detectorSpacing);
+			} else if( i%2 == 0) {
+				setAtIndex( i, 0.0f);
+			} else {
+				setAtIndex(i, (float) ((-1.0)/(detectorSpacing*detectorSpacing*(-this.getSize()[0] + i)*(-this.getSize()[0]+i)*Math.PI*Math.PI)));
+			}
+		}
 		
 		this.transformForward();
 	}

@@ -19,7 +19,7 @@ public class RampFilter extends Grid1DComplex {
 		}
 		for( int i = (this.getSize()[0] >> 1); i < this.getSize()[0]; i++ ) {
 			double j = this.indexToPhysical(i);
-			setAtIndex( i, (float) (1.0 - j));
+			setAtIndex( i, (float) (detectorSpacing - j));
 		}
 	}
 

@@ -175,7 +175,7 @@ public class MyDetector extends Grid2D {
 				}
 				
 				// write new value into the sinogram
-				setAtIndex(j, i, detector_value);
+				setAtIndex(j, i, detector_value );
 			}
 		}
 	}

@@ -5,32 +5,24 @@ import edu.stanford.rsl.conrad.data.numeric.*;
 
 public class FilteredBackProjector extends Grid2D {
 	
-	Grid2D phantom;
 	Grid2D sinogram;
 	Grid2D filteredData;
 	Grid1DComplex filter;
 	
 	double epsilon = 0.0001;
-	double delta_x;
-	double delta_y;
 
-
-	public FilteredBackProjector(Grid2D phantom, Grid2D sinogram, Grid1DComplex filter) {
+	public FilteredBackProjector(int size_x, int size_y, double spacing_x, double spacing_y, Grid2D sinogram, Grid1DComplex filter) {
 		
-		super(phantom.getSize()[0], phantom.getSize()[1]);
-		setSpacing(phantom.getSpacing()[0], phantom.getSpacing()[1]);
-		setOrigin(phantom.getOrigin()[0], phantom.getOrigin()[1]);
+		super(size_x, size_y);
+		setSpacing(spacing_x, spacing_y);
+		setOrigin(-(size_x-1)*spacing_x*0.5, -(size_y-1)*spacing_x*0.5);
 		
-		this.phantom = phantom;
 		this.sinogram = sinogram;
 		this.filter = filter;
 		filteredData = new Grid2D(sinogram.getSize()[0], sinogram.getSize()[1]);
 		filteredData.setSpacing(sinogram.getSpacing());
 		filteredData.setOrigin(sinogram.getOrigin());
-		
-		delta_x = phantom.getWidth() * 0.5 * phantom.getSpacing()[0];
-		delta_y = phantom.getHeight() * 0.5* phantom.getSpacing()[1];
-		
+				
 		filter();
 		backproject();
 		
@@ -50,10 +42,10 @@ public class FilteredBackProjector extends Grid2D {
 			for( int j = 0; j < detectorRow.getSize()[0]; j++ ) {
 				
 				// Apply filtering 
-				 detectorRow.setAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getRealAtIndex(j));
-				// Complex Mutlitplication
+				// Complex Multiplication
 				detectorRow.setRealAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getRealAtIndex(j) - detectorRow.getImagAtIndex(j) * filter.getImagAtIndex(j));
 				detectorRow.setImagAtIndex(j, detectorRow.getRealAtIndex(j) * filter.getImagAtIndex(j) + detectorRow.getImagAtIndex(j) * filter.getRealAtIndex(j));
+				
 				// do not filter
 				//detectorRow.setAtIndex( j, detectorRow.getRealAtIndex(j) );
 				
@@ -70,6 +62,7 @@ public class FilteredBackProjector extends Grid2D {
 		}
 		filteredData.show("FilteredSinogram");	
 	}
+	
 	
 	void backproject() {
 		
@@ -101,7 +94,7 @@ public class FilteredBackProjector extends Grid2D {
 						s = s * Math.signum(s_x);
 					}
 
-					// biliniear interpolation --> linear interpolation is sufficient
+					// Bilinear interpolation --> linear interpolation is sufficient
 					double[] pos = filteredData.physicalToIndex(s, theta);
 					detector_value += InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]);
 					

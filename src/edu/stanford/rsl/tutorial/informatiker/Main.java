@@ -14,7 +14,7 @@ public class Main {
 		double phantomSpacingY = 1.0;
 		
 		int numProjections = 360;
-		int numDetectorPixels = 1024;
+		int numDetectorPixels = 512;
 		double detectorSpacing = 1.0;
 		
 		

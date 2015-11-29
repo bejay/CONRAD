@@ -55,22 +55,24 @@ public class FanBeamDetector extends Grid2D {
 	}
 
 	void initializeGrid() {
-		double theta;
-		double s;
-		
+	
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
-			i = 90;
-			theta = this.indexToPhysical(0, i)[1];
+			i = 45;
+			
+			double theta = this.indexToPhysical(0, i)[1];
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
-				j = 512;
-				s = this.indexToPhysical(j, 0)[0];
+				j = 256;
+				
+				double s = this.indexToPhysical(j, 0)[0];
 				// Angle to X axes
 				double alpha = theta - Math.atan(s/dSD);
 				// Position on X axes
 				double d = dSI * Math.tan(alpha); //s/dSD;
+				
+				System.out.printf("theta: %f, alpha: %f, s: %f, d: %f", theta, alpha, s, d);
 		
 				Point2D start;
 				Point2D end;
@@ -131,16 +133,16 @@ public class FanBeamDetector extends Grid2D {
 			step_y = 0.0;
 		}
 		MyPhantom linePhantom = new MyPhantom(600,600, 1, 1);
-//		for(int l = 0; l < 600; ++l){
-//			linePhantom.setAtIndex(300, l, 5f);
-//			linePhantom.setAtIndex(l, 300, 5f);
-//		}
+		for(int l = 0; l < 600; ++l){
+			linePhantom.setAtIndex(300, l, 1f);
+			linePhantom.setAtIndex(l, 300, 1f);
+		}
 		for (int k = 0; k <= (int) max_steps; ++k) {
 			current_pos_x += step_x * step_size_x;
 			current_pos_y += step_y * step_size_y;
 			double[] p = phantom.physicalToIndex(current_pos_x, current_pos_y);
 			if(p[0] <= 0 || p[1] <= 0) continue; //setAtIndex checks for values > size but not < 0
-			linePhantom.setAtIndex((int)p[0], (int)p[1], 10f);
+			linePhantom.setAtIndex((int)p[0], (int)p[1], 8f);
 		}
 		linePhantom.show();
 	}

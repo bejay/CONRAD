@@ -8,14 +8,14 @@ public class Main {
 	public static void main( String[] args ) {
 		
 		// PHANTOM SIZE
-		int phantomWidth = 600;
-		int phantomHeight = 600;
+		int phantomWidth = 300;
+		int phantomHeight = 300;
 		double phantomSpacingX = 1.0;
 		double phantomSpacingY = 1.0;
 		
-		int numProjections = 180;
-		int numDetectorPixels = 1024;
-		double detectorSpacing = 2.0;
+		int numProjections = 720;
+		int numDetectorPixels = 512;
+		double detectorSpacing = 1.0;
 		
 		
 		// BACKPROJECTION SIZE
@@ -28,7 +28,7 @@ public class Main {
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
-		phantom.show("Phantom");
+//		phantom.show("Phantom");
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
 //		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
@@ -58,8 +58,8 @@ public class Main {
 		double dSI = 500;
 		double dSD = 1000;
 
-		FanBeamDetector detector2 = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
-		detector2.show("Fanogram");
+		FanBeamDetector fanbeamdetector = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
+		fanbeamdetector.show("Fanogram");
 		
 		
 		

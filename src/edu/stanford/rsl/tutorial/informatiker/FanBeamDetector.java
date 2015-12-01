@@ -173,16 +173,14 @@ public class FanBeamDetector extends Grid2D {
 				
 				double s = sinogram.indexToPhysical(j, 0)[0];
 				
-				double gamma = Math.asin(s/dSI);
+				double gamma = Math.atan(s/dSI);
 				double beta = theta - gamma;
-				double t = dSD * Math.tan(gamma);
-//				
-				double delta = beta;
-				if(delta < 0) {
-					delta += Math.PI;
-				}
 				
-				sinogram.setAtIndex(i, j, InterpolationOperators.interpolateLinear(this, t, delta));
+				
+				
+				System.out.printf("gamma: %f, s: %f, beta: %f\n",gamma, s, beta);
+				
+				sinogram.setAtIndex(i, j, InterpolationOperators.interpolateLinear(this, s, beta));
 
 				
 				

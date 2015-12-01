@@ -38,6 +38,21 @@ public class MyDetector extends Grid2D {
 		initializeGrid();
 
 	}
+	
+	public MyDetector(int numProjections, double detectorSpacing,
+			int numDetectorPixels) {
+
+		super(numDetectorPixels, numProjections);
+		setSpacing(detectorSpacing, Math.PI / numProjections);
+		setOrigin(-(numDetectorPixels-1)*0.5*detectorSpacing, 0);
+		
+		this.numProjections = numProjections;
+		this.detectorSpacing = detectorSpacing;
+		this.numDetectorPixels = numDetectorPixels;
+		delta_x = phantom.getWidth() * 0.5 * phantom.getSpacing()[0];
+		delta_y = phantom.getHeight() * 0.5* phantom.getSpacing()[1];
+
+	}
 
 	// creates the sinogram, automatically called by constructor
 	void initializeGrid() {

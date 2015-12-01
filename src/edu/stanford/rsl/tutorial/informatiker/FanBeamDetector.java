@@ -1,6 +1,7 @@
 package edu.stanford.rsl.tutorial.informatiker;
 
 import edu.stanford.rsl.conrad.data.numeric.Grid2D;
+import edu.stanford.rsl.conrad.data.numeric.InterpolationOperators;
 import edu.stanford.rsl.conrad.geometry.shapes.simple.Point2D;
 
 public class FanBeamDetector extends Grid2D {
@@ -44,41 +45,46 @@ public class FanBeamDetector extends Grid2D {
 
 		// assert Source or Detector is always outside of Phantom
 		// (assumption: )
-//		if (dSI * dSI < delta_x * delta_x + delta_y * delta_y ) {
-//			System.err.println("Source inside Phantom!");
-//		}
-//		if ((dSD - dSI) * (dSD - dSI) < delta_x * delta_x + delta_y * delta_y ) {
-//			System.err.println("Detector inside Phantom!");
-//		}
+		if (dSI * dSI < delta_x * delta_x + delta_y * delta_y ) {
+			System.err.println("Source inside Phantom!");
+		}
+		if ((dSD - dSI) * (dSD - dSI) < delta_x * delta_x + delta_y * delta_y ) {
+			System.err.println("Detector inside Phantom!");
+		}
 		
 		initializeGrid();
+		rebinning();
 	}
 
 	void initializeGrid() {
 	
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
-			i = 45;
+//			i = 45;
 			
 			double theta = this.indexToPhysical(0, i)[1];
+			double s_x = dSI * Math.cos(theta);
+			double s_y = dSI * Math.sin(theta);
+//			System.out.printf("sx: %f  sy: %f\n", s_x,s_y);
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
-				j = 256;
+//				j = 512;
 				
 				double s = this.indexToPhysical(j, 0)[0];
 				// Angle to X axes
-				double alpha = theta - Math.atan(s/dSD);
+				double alpha = (theta + Math.atan(s/dSD)) % Math.PI;
+
 				// Position on X axes
-				double d = dSI * Math.tan(alpha); //s/dSD;
+				double source_pos_x = s_x - (s_y/Math.sin(alpha))*Math.cos(alpha);
 				
-				System.out.printf("theta: %f, alpha: %f, s: %f, d: %f", theta, alpha, s, d);
+//				System.out.printf("theta: %f, alpha: %f, s: %f, source_pos_x: %f", theta/Math.PI*180, alpha/Math.PI*180, s, source_pos_x);
 		
 				Point2D start;
 				Point2D end;
 				
 				// case beam parallel to x axes
-				if ( Math.abs(alpha) < epsilon || Math.abs(alpha - Math.PI) < epsilon ) {
+				if ( Math.abs(alpha) < epsilon ) {
 					start = new Point2D(delta_x, s);
 					end = new Point2D(-delta_x, s);
 				} else {
@@ -86,34 +92,95 @@ public class FanBeamDetector extends Grid2D {
 					double x = delta_y / Math.tan(alpha);
 
 					// hits top border
-					if (x + d - delta_x < epsilon) {
-						start = new Point2D(x + d, -delta_y);
+					if (x + source_pos_x - delta_x < epsilon) {
+						start = new Point2D(x + source_pos_x, -delta_y);
 						
 					// hits right border
 					} else {
-						double y = (delta_x - d)
+						double y = (delta_x - source_pos_x)
 									* Math.tan(alpha);
 						start = new Point2D(delta_x, -y);
 					}
 						
 					// hits bottom border
-					if (x - d - delta_x < epsilon) {
-						end = new Point2D(-x + d, delta_y);
+					if (x - source_pos_x - delta_x < epsilon) {
+						end = new Point2D(-x + source_pos_x, delta_y);
 						
 					// hits left border
 					} else {
-						double y = (delta_x + d)
+						double y = (delta_x + source_pos_x)
 									* Math.tan(alpha);
 						end = new Point2D(-delta_x, y);
 					}
 				}
 				
-				show_line( start,  end);
-				break;
+				// summing up the line integral
+				float detector_value = 0f;
+				
+				double current_pos_x = start.getX();
+				double current_pos_y = start.getY();
+								
+				// Unit direction vector
+				double step_x = (end.getX() - start.getX()) / Math.abs(end.getX() - start.getX());
+				double step_y = (end.getY() - start.getY()) / Math.abs(end.getY() - start.getY());
+				
+				// STEP SIZE in [mm]
+				double step_size = 1.0;
+				double step_size_x = step_size * Math.abs(end.getX() - start.getX()) / (Math.abs(end.getX() - start.getX()) + Math.abs(end.getY() - start.getY()));
+				double step_size_y = step_size * Math.abs(end.getY() - start.getY()) / (Math.abs(end.getX() - start.getX()) + Math.abs(end.getY() - start.getY()));
+								
+				double max_steps = Math.abs(end.getX() - start.getX()) / step_size_x;
+				// end.getX() - start.getX() == 0 --> theta = 0
+				if(Math.abs(step_size_x) < epsilon) {
+					max_steps = Math.abs(end.getY() - start.getY()) / step_size_y;
+					step_x = 0.0;
+				}
+				// end.getX() - start.getX() == 0 --> theta = 0
+				if(Math.abs(step_size_y) < epsilon) {
+					step_y = 0.0;
+				}
+				// walk down the line and add up phantom values
+				for (int k = 0; k <= (int) max_steps; ++k) {
+		
+					current_pos_x += step_x * step_size_x;
+					current_pos_y += step_y * step_size_y;
+					double[] p = phantom.physicalToIndex(current_pos_x, current_pos_y);
+					detector_value += InterpolationOperators.interpolateLinear(phantom, p[0], p[1]);
+
+				}
+				
+				// write new value into the sinogram
+				setAtIndex(j, i, detector_value );
+				
+//				show_line( start,  end);
+//				break;
 			}
-			break;
+//			break;
 		}
 	}
+	
+	
+	void rebinning() {
+		MyDetector sinogram = new MyDetector( numProjections, detectorSpacing, numDetectorPixels);
+		
+		// iterate over all angles
+		for (int i = 0; i < numProjections; ++i) {
+
+			double theta = this.indexToPhysical(0, i)[1];
+			
+			// iterate over all detector positions
+			for (int j = 0; j < numDetectorPixels; ++j) {
+				
+				double s = this.indexToPhysical(j, 0)[0];
+				
+				
+				
+			}
+		}
+		
+//		sinogram.show("Sinogram");
+	}
+	
 	
 	void show_line(Point2D start, Point2D end) {
 

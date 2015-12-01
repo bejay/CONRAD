@@ -14,8 +14,8 @@ public class Main {
 		double phantomSpacingY = 1.0;
 		
 		int numProjections = 360;
-		int numDetectorPixels = 512;
-		double detectorSpacing = 1.0;
+		int numDetectorPixels = 1024;
+		double detectorSpacing = 2.0;
 		
 		
 		// BACKPROJECTION SIZE
@@ -28,7 +28,7 @@ public class Main {
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
-//		phantom.show("Phantom");
+		phantom.show("Phantom");
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
 //		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
@@ -55,11 +55,11 @@ public class Main {
 //		double detectorSpacing = 1.0;
 //		int numDetectorPixels = 512;
 		double rotationAngleIncrement = 1.0 * Math.PI / 180.0;
-		double dSI = 300;
-		double dSD = 600;
+		double dSI = 500;
+		double dSD = 1000;
 
 		FanBeamDetector detector = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
-//		detector.show("Fanogram");
+		detector.show("Fanogram");
 		
 	}
 }

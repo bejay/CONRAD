@@ -49,8 +49,6 @@ public class MyDetector extends Grid2D {
 		this.numProjections = numProjections;
 		this.detectorSpacing = detectorSpacing;
 		this.numDetectorPixels = numDetectorPixels;
-		delta_x = phantom.getWidth() * 0.5 * phantom.getSpacing()[0];
-		delta_y = phantom.getHeight() * 0.5* phantom.getSpacing()[1];
 
 	}
 

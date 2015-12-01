@@ -166,19 +166,31 @@ public class FanBeamDetector extends Grid2D {
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
 
-			double theta = this.indexToPhysical(0, i)[1];
+			double theta = sinogram.indexToPhysical(0, i)[1];
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
 				
-				double s = this.indexToPhysical(j, 0)[0];
+				double s = sinogram.indexToPhysical(j, 0)[0];
+				
+				double gamma = Math.asin(s/dSI);
+				double beta = theta - gamma;
+				double t = dSD * Math.tan(gamma);
+//				
+				double delta = beta;
+				if(delta < 0) {
+					delta += Math.PI;
+				}
+				
+				sinogram.setAtIndex(i, j, InterpolationOperators.interpolateLinear(this, t, delta));
+
 				
 				
 				
 			}
 		}
 		
-//		sinogram.show("Sinogram");
+		sinogram.show("Sinogram");
 	}
 	
 	

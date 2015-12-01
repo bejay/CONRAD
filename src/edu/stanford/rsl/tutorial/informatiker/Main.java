@@ -13,7 +13,7 @@ public class Main {
 		double phantomSpacingX = 1.0;
 		double phantomSpacingY = 1.0;
 		
-		int numProjections = 360;
+		int numProjections = 180;
 		int numDetectorPixels = 1024;
 		double detectorSpacing = 2.0;
 		
@@ -58,8 +58,10 @@ public class Main {
 		double dSI = 500;
 		double dSD = 1000;
 
-		FanBeamDetector detector = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
-		detector.show("Fanogram");
+		FanBeamDetector detector2 = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
+		detector2.show("Fanogram");
+		
+		
 		
 	}
 }

@@ -60,7 +60,7 @@ public class FilteredBackProjector extends Grid2D {
 				
 			}
 		}
-		filteredData.show("FilteredSinogram");	
+//		filteredData.show("FilteredSinogram");	
 	}
 	
 	

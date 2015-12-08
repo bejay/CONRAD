@@ -43,7 +43,7 @@ public class MyDetector extends Grid2D {
 			int numDetectorPixels) {
 
 		super(numDetectorPixels, numProjections);
-		setSpacing(detectorSpacing, Math.PI / numProjections);
+		setSpacing(detectorSpacing, 2.0 * Math.PI / numProjections);
 		setOrigin(-(numDetectorPixels-1)*0.5*detectorSpacing, 0);
 		
 		this.numProjections = numProjections;

@@ -13,8 +13,8 @@ public class Main {
 		double phantomSpacingX = 1.0;
 		double phantomSpacingY = 1.0;
 		
-		int numProjections = 720;
-		int numDetectorPixels = 512;
+		int numProjections = 360;
+		int numDetectorPixels = 1024;
 		double detectorSpacing = 1.0;
 		
 		
@@ -28,11 +28,11 @@ public class Main {
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
-//		phantom.show("Phantom");
+		phantom.show("Phantom");
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
-//		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
-//		detector.show("Sinogram");
+		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
+		detector.show("Sinogram Original");
 		
 		/* RAMPFILTER --- Filter defined in Frequency Domain */
 //		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
@@ -55,11 +55,19 @@ public class Main {
 //		double detectorSpacing = 1.0;
 //		int numDetectorPixels = 512;
 		double rotationAngleIncrement = 1.0 * Math.PI / 180.0;
-		double dSI = 500;
-		double dSD = 1000;
+		double dSI = 800;
+		double dSD = 1200;
 
 		FanBeamDetector fanbeamdetector = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
 		fanbeamdetector.show("Fanogram");
+		fanbeamdetector.sinogram.show("Sinogram Rebinning");
+		
+		/* RAMPFILTER --- Filter defined in Frequency Domain */
+//		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
+//		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
+		
+//		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, fanbeamdetector, rampfilter);
+//		filterbackprojector2.show("Backprojection_ramp");
 		
 		
 		

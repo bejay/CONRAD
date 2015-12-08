@@ -25,7 +25,7 @@ public class FanBeamDetector extends Grid2D {
 	double epsilon = 0.0001;
 
 	MyPhantom phantom;
-
+	MyDetector sinogram;
 	
 	public FanBeamDetector(int numProjections, double detectorSpacing,
 			int numDetectorPixels, double rotationAngleIncrement, double dSI, double dSD , MyPhantom phantom) {
@@ -60,7 +60,7 @@ public class FanBeamDetector extends Grid2D {
 	
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
-//			i = 45;
+			i = 45;
 			
 			double theta = this.indexToPhysical(0, i)[1];
 			double s_x = dSI * Math.cos(theta);
@@ -69,7 +69,7 @@ public class FanBeamDetector extends Grid2D {
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
-//				j = 512;
+				j = 512;
 				
 				double s = this.indexToPhysical(j, 0)[0];
 				// Angle to X axes
@@ -152,43 +152,46 @@ public class FanBeamDetector extends Grid2D {
 				// write new value into the sinogram
 				setAtIndex(j, i, detector_value );
 				
-//				show_line( start,  end);
-//				break;
+				show_line( start,  end);
+				break;
 			}
-//			break;
+			break;
 		}
 	}
 	
 	
 	void rebinning() {
-		MyDetector sinogram = new MyDetector( numProjections, detectorSpacing, numDetectorPixels);
+		this.sinogram = new MyDetector( numProjections, detectorSpacing, numDetectorPixels);
 		
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
 
 			double theta = sinogram.indexToPhysical(0, i)[1];
+//			theta = Math.PI - theta;
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
 				
-				double s = sinogram.indexToPhysical(j, 0)[0];
+				double s =  sinogram.indexToPhysical(j, 0)[0];
+//				s = 0.;
 				
-				double gamma = Math.atan(s/dSI);
-				double beta = theta - gamma;
+				// theta goes from [0, 180)
+				// gamma is never smaller than -90 or bigger than +90 degrees
+				double gamma = Math.atan(s/dSD);
+				double beta = theta + Math.PI*0.5 - gamma;
+				if(beta >  numProjections * rotationAngleIncrement) {
+					beta -= numProjections * rotationAngleIncrement;
+				}
 				
 				
-				
-				System.out.printf("gamma: %f, s: %f, beta: %f\n",gamma, s, beta);
-				
-				sinogram.setAtIndex(i, j, InterpolationOperators.interpolateLinear(this, s, beta));
+//				System.out.printf("theta: %f, gamma: %f, s: %f, beta: %f\n",theta/Math.PI * 180, gamma/Math.PI*180, s, beta/Math.PI *180);
+				double[] pos = this.physicalToIndex(s, beta);
+				sinogram.setAtIndex(j, i, InterpolationOperators.interpolateLinear(this, pos[0], pos[1]));
 
 				
-				
-				
+						
 			}
 		}
-		
-		sinogram.show("Sinogram");
 	}
 	
 	

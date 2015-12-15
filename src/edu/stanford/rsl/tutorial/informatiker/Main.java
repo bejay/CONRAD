@@ -30,43 +30,42 @@ public class Main {
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
 		phantom.show("Phantom");
 		
-		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
-		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
-//		detector.show("Sinogram Original");
 		
+		/* PARALLEL BEAM RECONSTRUCTION */
+		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
+
 		/* RAMPFILTER --- Filter defined in Frequency Domain */
 		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
-//		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
 
 		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter);
-		filterbackprojector.show("Backprojection_ramp");
 		
 		/* RAMLAKFILTER --- Filter defined in Spatial Domain */
 //		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
-//		rampfilter_spatial.getRealSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
-//		rampfilter_spatial.getImagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak_Imaginary");
-//		rampfilter_spatial.getMagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
-		
-//		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter_spatial);
-//		filterbackprojector.show("Backprojection_ramlak");
 
+//		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter_spatial);
+
+		// SHOW RESULTS
+//		detector.show("Sinogram Original");
+//		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
+		filterbackprojector.show("Backprojection_ramp");
+//		rampfilter_spatial.getMagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
+//		filterbackprojector.show("Backprojection_ramlak");
 		
-//		int numProjections = 360;
-//		double detectorSpacing = 1.0;
-//		int numDetectorPixels = 512;
+		/* CONE BEAM RECONSTRUCTION */
 		double rotationAngleIncrement = 1.0 * Math.PI / 180.0;
 		double dSI = 800;
 		double dSD = 1200;
 
 		FanBeamDetector fanbeamdetector = new FanBeamDetector( numProjections, detectorSpacing, numDetectorPixels, rotationAngleIncrement, dSI, dSD, phantom );
-		fanbeamdetector.show("Fanogram");
-		fanbeamdetector.sinogram.show("Sinogram Rebinning");
-		
+
 		/* RAMPFILTER --- Filter defined in Frequency Domain */
 		RampFilter rampfilter2 = new RampFilter( numDetectorPixels, detectorSpacing );
-//		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
-		
+
 		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, fanbeamdetector.sinogram, rampfilter2);
+
+//		fanbeamdetector.show("Fanogram");
+//		fanbeamdetector.sinogram.show("Sinogram Rebinning");
+//		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
 		filterbackprojector2.show("Backprojection_ramp");
 				
 		

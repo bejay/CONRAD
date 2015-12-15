@@ -178,7 +178,7 @@ public class FanBeamDetector extends Grid2D {
 				
 				// beta walks outside the fanogram, reset to zero
 				// fanogram is 1 bigger than sinogram, therefore interpolate at boundaries works
-				// is dueable if only fanogram is multiple of 360 degrees
+				// is doable if only fanogram is multiple of 360 degrees
 				beta %= numProjections * rotationAngleIncrement;
 				
 				double[] pos = this.physicalToIndex(s, beta);

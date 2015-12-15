@@ -1,7 +1,15 @@
 package edu.stanford.rsl.tutorial.informatiker;
 
 
+import com.jogamp.opencl.*;
+
+import edu.emory.mathcs.utils.IOUtils;
+import edu.stanford.rsl.conrad.data.OpenCLMemoryDelegate;
+import edu.stanford.rsl.conrad.data.numeric.NumericPointwiseOperators;
+import edu.stanford.rsl.conrad.data.numeric.opencl.OpenCLGrid2D;
 import ij.ImageJ;
+
+
 
 
 public class Main {
@@ -23,13 +31,55 @@ public class Main {
 		int backprojectSizeY = 600;
 		double backprojectSpacingX = 1.0;
 		double backprojectSpacingY = 1.0;
-		
+
 		
 		
 		new ImageJ();
 		MyPhantom phantom = new MyPhantom( phantomWidth, phantomHeight, phantomSpacingX, phantomSpacingY );
 		phantom.show("Phantom");
 		
+		private static String programSource =
+			    "__kernel void "+
+			    "sampleKernel(__global const float *a,"+
+			    "             __global const float *b,"+
+			    "             __global float *c)"+
+			    "{"+
+			    "    int gid = get_global_id(0);"+
+			    "    c[gid] = a[gid] + b[gid];"+
+			    "}";
+
+		
+		long t0 = System.nanoTime();
+		for (int i=0; i < 100; i++) {
+			//NumericPointwiseOperators.addedBy(phantom, phantom);
+		}
+		long t1 = System.nanoTime();
+		long diff = t1 - t0;
+		long ns = diff % 1000;
+		long us = diff / 1000;
+		long ms = us / 1000;
+		us %= 1000;
+		long s = ms / 1000;
+		ms %= 1000;
+		System.out.println("CPU: Took "+s+"s "+ms+"ms "+us+"us "+ns+"ns");
+		
+		OpenCLGrid2D phantomCL = new OpenCLGrid2D(phantom);
+		OpenCLMemoryDelegate delegate = phantomCL.getDelegate();
+		
+		delegate.prepareForDeviceOperation();
+		
+		// DO STUFF
+		CLBuffer buf = delegate.getCLBuffer();
+		
+        String src = IOUtils.readText(Informatiker.class.getResource("KernelAdd.cl"));
+        CLProgram program = context.createProgram(src);
+
+		
+		CLKernel addFloatsKernel = program.createKernel("add_floats");
+
+		delegate.prepareForHostOperation();
+		
+		return;
 		
 		/* PARALLEL BEAM RECONSTRUCTION */
 		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
@@ -71,3 +121,4 @@ public class Main {
 		
 	}
 }
+

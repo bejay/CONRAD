@@ -14,15 +14,15 @@ public class Main {
 		double phantomSpacingY = 1.0;
 		
 		int numProjections = 360;
-		int numDetectorPixels = 1024;
+		int numDetectorPixels = 512;
 		double detectorSpacing = 1.0;
 		
 		
 		// BACKPROJECTION SIZE
 		int backprojectSizeX = 600;
 		int backprojectSizeY = 600;
-		double backprojectSpacingX = 1;
-		double backprojectSpacingY = 1;
+		double backprojectSpacingX = 1.0;
+		double backprojectSpacingY = 1.0;
 		
 		
 		
@@ -32,14 +32,14 @@ public class Main {
 		
 		// int numProjections, double detectorSpacing, int numDetectorPixels, MyPhantom phantom
 		MyDetector detector = new MyDetector( numProjections, detectorSpacing, numDetectorPixels, phantom );
-		detector.show("Sinogram Original");
+//		detector.show("Sinogram Original");
 		
 		/* RAMPFILTER --- Filter defined in Frequency Domain */
-//		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
+		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
 //		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
 
-//		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter);
-//		filterbackprojector2.show("Backprojection_ramp");
+		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter);
+		filterbackprojector.show("Backprojection_ramp");
 		
 		/* RAMLAKFILTER --- Filter defined in Spatial Domain */
 //		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
@@ -63,13 +63,12 @@ public class Main {
 		fanbeamdetector.sinogram.show("Sinogram Rebinning");
 		
 		/* RAMPFILTER --- Filter defined in Frequency Domain */
-//		RampFilter rampfilter = new RampFilter( numDetectorPixels, detectorSpacing );
+		RampFilter rampfilter2 = new RampFilter( numDetectorPixels, detectorSpacing );
 //		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
 		
-//		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, fanbeamdetector, rampfilter);
-//		filterbackprojector2.show("Backprojection_ramp");
-		
-		
+		FilteredBackProjector filterbackprojector2 = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, fanbeamdetector.sinogram, rampfilter2);
+		filterbackprojector2.show("Backprojection_ramp");
+				
 		
 	}
 }

@@ -29,7 +29,7 @@ public class FanBeamDetector extends Grid2D {
 	
 	public FanBeamDetector(int numProjections, double detectorSpacing,
 			int numDetectorPixels, double rotationAngleIncrement, double dSI, double dSD , MyPhantom phantom) {
-		super(numDetectorPixels, numProjections);
+		super(numDetectorPixels, numProjections + 1); //additional line at the end will be filled with the first line, solves interpolation problem at the end cases of rebinning 
 		setSpacing(detectorSpacing, rotationAngleIncrement);
 		setOrigin(-(numDetectorPixels-1)*0.5*detectorSpacing, 0);
 		
@@ -60,7 +60,6 @@ public class FanBeamDetector extends Grid2D {
 	
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
-			i = 45;
 			
 			double theta = this.indexToPhysical(0, i)[1];
 			double s_x = dSI * Math.cos(theta);
@@ -69,7 +68,6 @@ public class FanBeamDetector extends Grid2D {
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
-				j = 512;
 				
 				double s = this.indexToPhysical(j, 0)[0];
 				// Angle to X axes
@@ -77,9 +75,7 @@ public class FanBeamDetector extends Grid2D {
 
 				// Position on X axes
 				double source_pos_x = s_x - (s_y/Math.sin(alpha))*Math.cos(alpha);
-				
-//				System.out.printf("theta: %f, alpha: %f, s: %f, source_pos_x: %f", theta/Math.PI*180, alpha/Math.PI*180, s, source_pos_x);
-		
+					
 				Point2D start;
 				Point2D end;
 				
@@ -151,11 +147,13 @@ public class FanBeamDetector extends Grid2D {
 				
 				// write new value into the sinogram
 				setAtIndex(j, i, detector_value );
-				
-				show_line( start,  end);
-				break;
 			}
-			break;
+		}
+		
+		for (int i = numProjections; i < numProjections + 1; ++i) {
+			for (int j = 0; j < numDetectorPixels; ++j) {
+				setAtIndex(j, i, this.getAtIndex(j, i - numProjections) );
+			}
 		}
 	}
 	
@@ -166,30 +164,25 @@ public class FanBeamDetector extends Grid2D {
 		// iterate over all angles
 		for (int i = 0; i < numProjections; ++i) {
 
-			double theta = sinogram.indexToPhysical(0, i)[1];
-//			theta = Math.PI - theta;
+			double theta = sinogram.indexToPhysical(0, numProjections - i)[1];
 			
 			// iterate over all detector positions
 			for (int j = 0; j < numDetectorPixels; ++j) {
 				
-				double s =  sinogram.indexToPhysical(j, 0)[0];
-//				s = 0.;
+				double s = sinogram.indexToPhysical(j, 0)[0];
 				
 				// theta goes from [0, 180)
 				// gamma is never smaller than -90 or bigger than +90 degrees
-				double gamma = Math.atan(s/dSD);
+				double gamma = Math.asin(s/dSD);
 				double beta = theta + Math.PI*0.5 - gamma;
-				if(beta >  numProjections * rotationAngleIncrement) {
-					beta -= numProjections * rotationAngleIncrement;
-				}
 				
+				// beta walks outside the fanogram, reset to zero
+				// fanogram is 1 bigger than sinogram, therefore interpolate at boundaries works
+				// is dueable if only fanogram is multiple of 360 degrees
+				beta %= numProjections * rotationAngleIncrement;
 				
-//				System.out.printf("theta: %f, gamma: %f, s: %f, beta: %f\n",theta/Math.PI * 180, gamma/Math.PI*180, s, beta/Math.PI *180);
 				double[] pos = this.physicalToIndex(s, beta);
 				sinogram.setAtIndex(j, i, InterpolationOperators.interpolateLinear(this, pos[0], pos[1]));
-
-				
-						
 			}
 		}
 	}

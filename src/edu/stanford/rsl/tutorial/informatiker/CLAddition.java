@@ -7,12 +7,8 @@ import com.jogamp.opencl.CLBuffer;
 import com.jogamp.opencl.CLCommandQueue;
 import com.jogamp.opencl.CLContext;
 import com.jogamp.opencl.CLDevice;
-import com.jogamp.opencl.CLImage2d;
-import com.jogamp.opencl.CLImageFormat;
 import com.jogamp.opencl.CLKernel;
 import com.jogamp.opencl.CLProgram;
-import com.jogamp.opencl.CLImageFormat.ChannelOrder;
-import com.jogamp.opencl.CLImageFormat.ChannelType;
 import com.jogamp.opencl.CLMemory.Mem;
 
 import edu.stanford.rsl.conrad.data.numeric.Grid2D;
@@ -44,7 +40,7 @@ public class CLAddition {
 		int localWorkSize = Math.min(device.getMaxWorkGroupSize(), 32); // Local work size dimensions
 		int globalWorkSizeT = OpenCLUtil.roundUp(localWorkSize, phantom.getSize()[0]); // rounded up to the nearest multiple of localWorkSize
 		int globalWorkSizeBeta = OpenCLUtil.roundUp(localWorkSize, phantom.getSize()[1]); // rounded up to the nearest multiple of localWorkSize
-
+		//WORKSIZE???????
 		
 		// load sources, create and build program
 		CLProgram program = null;

@@ -64,7 +64,7 @@ public class OpenCLGridOperators extends NumericGridOperator {
 	/**
 	 * This class encapsulate the complete OpenCLSetup which contains all OpenCL properties belonging to and influencing each other. It is implemented as singleton.
 	 */
-	protected class OpenCLSetup {
+	public class OpenCLSetup {
 		private CLDevice device;
 		private CLContext context;
 		private CLProgram program;

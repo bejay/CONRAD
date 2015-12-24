@@ -30,17 +30,12 @@ public class CLAddition {
 		CLContext context = OpenCLUtil.createContext();
 		CLDevice device = context.getMaxFlopsDevice();
 		System.out.println(device.toString());
-		
+
 		// set work sizes
 		int gridSize = phantom.getSize()[0] * phantom.getSize()[1];
-//		int localWorkSize = Math.min(device.getMaxWorkGroupSize(), 8); // Local work size dimensions
-//		int globalWorkSizeT = OpenCLUtil.roundUp(localWorkSize, 512); // rounded up to the nearest multiple of localWorkSize
-//		int globalWorkSizeBeta = OpenCLUtil.roundUp(localWorkSize, 512); // rounded up to the nearest multiple of localWorkSize
-
 		int localWorkSize = Math.min(device.getMaxWorkGroupSize(), 32); // Local work size dimensions
 		int globalWorkSizeT = OpenCLUtil.roundUp(localWorkSize, phantom.getSize()[0]); // rounded up to the nearest multiple of localWorkSize
 		int globalWorkSizeBeta = OpenCLUtil.roundUp(localWorkSize, phantom.getSize()[1]); // rounded up to the nearest multiple of localWorkSize
-		//WORKSIZE???????
 		
 		// load sources, create and build program
 		CLProgram program = null;
@@ -66,7 +61,7 @@ public class CLAddition {
 		// copy params
 		CLKernel kernel = program.createCLKernel("add2DGrid");
 		kernel.putArg(imageBuffer).putArg(result)
-			  .putArg(gridSize);
+			  .putArg(phantom.getSize()[0]).putArg(phantom.getSize()[1]);
 
 		/* GPU --- TIME MEASURING */
 		CLCommandQueue queue = device.createCommandQueue();

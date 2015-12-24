@@ -3,22 +3,14 @@
 kernel void add2DGrid(
 	global const float *a,
 	global float *b,
-	int numElements)
+	int rows,
+	int cols)
 {
-	int id = get_global_id(0);
-	if(id >= numElements) {
+	int x = get_global_id(0);
+	int y = get_global_id(1);
+	if(x >= cols || y >= rows) {
 		return;
 	}
-	b[id] = a[id] + a[id];
+	b[y*cols + x] = a[y*cols + x] + a[y*cols + x];
 }
 
-
-/*
-__kernel void add2DGrid(
-	__global const float *a,
-	__global float *b)
-{
-	int id = get_global_id(0);
-	b[id] = a[id] + a[id];
-}
-*/

@@ -10,11 +10,11 @@ public class MyPhantom extends Grid2D {
 		this.setSpacing(spacingX, spacingY);
 		this.setOrigin(-(width-1)*spacingX*0.5, -(height-1)*spacingY*0.5);
 		
-		for(int i = 0; i<width; ++i) {
-			for(int j = 0; j<width; ++j) {
-				setAtIndex(i, j, 0.5f);
-			}
-		}
+//		for(int i = 0; i<width; ++i) {
+//			for(int j = 0; j<width; ++j) {
+//				setAtIndex(i, j, 0.5f);
+//			}
+//		}
 		
 		// Draw a square with size 100,100 with center 150,150
 		for (int x = 100; x <= 200; x++) {

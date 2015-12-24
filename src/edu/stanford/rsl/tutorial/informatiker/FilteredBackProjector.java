@@ -79,7 +79,7 @@ public class FilteredBackProjector extends Grid2D {
 				for( int k = 0; k < sinogram.getHeight(); ++k ) {
 					
 					double theta = filteredData.indexToPhysical(0, k)[1];
-					if(theta >= Math.PI) theta %= Math.PI; //changed for fanbeam reconstruction!!! - theta is defined differently, walks other direction
+					if(theta >= Math.PI) theta %= Math.PI;
 					
 					// calculate intersection between detector line d=(0,0)+a(cos(theta),-sin(theta))
 					// and line through point p othorgonal to d
@@ -100,7 +100,7 @@ public class FilteredBackProjector extends Grid2D {
 					detector_value += InterpolationOperators.interpolateLinear(filteredData, pos[0], pos[1]);
 					
 				}
-//				this.setAtIndex(i, this.getHeight() - j, detector_value); // changed for fanbeamreconstruction!!!
+
 				this.setAtIndex(i, j, detector_value);
 			}
 		}

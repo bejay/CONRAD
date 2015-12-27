@@ -18,9 +18,11 @@ import edu.stanford.rsl.conrad.opencl.OpenCLUtil;
 public class CLAddition {
 	
 	MyPhantom phantom;
+	int iterations;
 	
-	public CLAddition(MyPhantom phantom) {
+	public CLAddition(int iterations, MyPhantom phantom) {
 		this.phantom = phantom;
+		this.iterations = iterations;
 		init();
 	}
 	
@@ -68,7 +70,7 @@ public class CLAddition {
 		long t0 = System.nanoTime();
 		// createCommandQueue
 		
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < iterations; i++) {
 
 			queue
 				.putWriteBuffer(imageBuffer, true)
@@ -86,7 +88,7 @@ public class CLAddition {
 		us %= 1000;
 		long s = ms / 1000;
 		ms %= 1000;
-		System.out.println("GPU: Took "+s+"s "+ms+"ms "+us+"us "+ns+"ns");
+		System.out.println("GPU         : Took "+s+"s "+ms+"ms "+us+"us "+ns+"ns");
 
 		
 		// write result back to grid2D
@@ -105,7 +107,7 @@ public class CLAddition {
 		program.release();
 		context.release();
 		
-		res.show();
+//		res.show();
 		
 		// alternative approach
 //		OpenCLGrid2D phantomCL = new OpenCLGrid2D(phantom);

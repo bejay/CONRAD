@@ -1,6 +1,20 @@
 package edu.stanford.rsl.tutorial.informatiker;
 
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import mdbtools.dbengine.tasks.FilterData;
+
+import com.jogamp.opencl.CLBuffer;
+import com.jogamp.opencl.CLCommandQueue;
+import com.jogamp.opencl.CLContext;
+import com.jogamp.opencl.CLDevice;
+import com.jogamp.opencl.CLKernel;
+import com.jogamp.opencl.CLProgram;
+import com.jogamp.opencl.CLMemory.Mem;
+
 import edu.stanford.rsl.conrad.data.numeric.*;
+import edu.stanford.rsl.conrad.opencl.OpenCLUtil;
 
 
 public class FilteredBackProjector extends Grid2D {
@@ -24,8 +38,39 @@ public class FilteredBackProjector extends Grid2D {
 		filteredData.setOrigin(sinogram.getOrigin());
 				
 		filter();
+//		filteredData.show("filteredData");
+//		backproject();
+		
+		long t0 = System.nanoTime();
+		
 		backproject();
 		
+		long t1 = System.nanoTime();
+		long diff = t1 - t0;
+		long time1 = diff;
+		long ns = diff % 1000;
+		long us = diff / 1000;
+		long ms = us / 1000;
+		us %= 1000;
+		long s = ms / 1000;
+		ms %= 1000;
+		System.out.println("Backprojection CPU : Took "+s+"s "+ms+"ms "+us+"us "+ns+"ns");
+		
+		t0 = System.nanoTime();
+		
+		backprojectOpenCL();
+		
+		t1 = System.nanoTime();
+		diff = t1 - t0;
+		long time2 = diff;
+		ns = diff % 1000;
+		us = diff / 1000;
+		ms = us / 1000;
+		us %= 1000;
+		s = ms / 1000;
+		ms %= 1000;
+		System.out.println("Backprojection GPU: Took "+s+"s "+ms+"ms "+us+"us "+ns+"ns");
+		System.out.println("Speedup: " + time1/time2);
 	}
 	
 	
@@ -60,7 +105,6 @@ public class FilteredBackProjector extends Grid2D {
 				
 			}
 		}
-//		filteredData.show("FilteredSinogram");	
 	}
 	
 	
@@ -88,7 +132,7 @@ public class FilteredBackProjector extends Grid2D {
 					double s_x = val * Math.cos(theta);
 					double s_y = val * Math.sin(theta);
 					double s = Math.sqrt(s_x*s_x + s_y*s_y);
-					// correct sign of s
+					// correct sign of s		
 					if(Math.abs(Math.signum(s_y)) != 0 ) {
 						s = s * Math.signum(s_y);
 					} else if( Math.abs(Math.signum(s_x)) != 0 ) {
@@ -105,4 +149,81 @@ public class FilteredBackProjector extends Grid2D {
 			}
 		}
 	}
+	
+	private void backprojectOpenCL() {
+
+		// create context and device
+		CLContext context = OpenCLUtil.createContext();
+		CLDevice device = context.getMaxFlopsDevice();
+		System.out.println(device.toString());
+
+		// set work sizes
+		int localWorkSize = Math.min(device.getMaxWorkGroupSize(), 8); // Local work size dimensions
+		int globalWorkSizeX = OpenCLUtil.roundUp(localWorkSize, this.getWidth()); // rounded up to the nearest multiple of localWorkSize
+		int globalWorkSizeY = OpenCLUtil.roundUp(localWorkSize, this.getHeight()); // rounded up to the nearest multiple of localWorkSize
+		int globalWorkSizeZ = OpenCLUtil.roundUp(localWorkSize, sinogram.getHeight()); // rounded up to the nearest multiple of localWorkSize
+			
+		// load sources, create and build program
+		CLProgram program = null;
+		try {
+			program = context.createProgram(this.getClass().getResourceAsStream("KernelAdd.cl"))
+					.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		//write filterData to buffer
+		CLBuffer<FloatBuffer> imageBuffer = context.createFloatBuffer(filteredData.getSize()[0]*filteredData.getSize()[1], Mem.READ_ONLY);	
+		for (int i=0;i<filteredData.getSize()[1];++i){
+			for (int j=0;j<filteredData.getSize()[0];++j)
+				imageBuffer.getBuffer().put(filteredData.getAtIndex(j, i));
+		}
+		imageBuffer.getBuffer().rewind();
+
+		// create memory for result
+		CLBuffer<FloatBuffer> result = context.createFloatBuffer(this.getSize()[0]*this.getSize()[1], Mem.WRITE_ONLY);
+
+		// copy params
+		CLKernel kernel = program.createCLKernel("backproject");
+		kernel.putArg(imageBuffer).putArg(result)
+			  .putArg(this.getSize()[0]).putArg(this.getSize()[1])
+			  .putArg(filteredData.getSize()[0]).putArg(filteredData.getSize()[1])
+			  .putArg((float)this.getSpacing()[0]).putArg((float)this.getSpacing()[1])
+			  .putArg((float)this.getOrigin()[0]).putArg((float)this.getOrigin()[1])
+			  .putArg((float)sinogram.getSpacing()[0]).putArg((float)sinogram.getSpacing()[1])
+			  .putArg((float)sinogram.getOrigin()[0]);
+
+		/* GPU --- TIME MEASURING */
+		CLCommandQueue queue = device.createCommandQueue();
+
+		// createCommandQueue
+		
+		queue
+			.putWriteBuffer(imageBuffer, true)
+			.finish()
+			.put3DRangeKernel(kernel, 0, 0, 0, globalWorkSizeX, globalWorkSizeY, globalWorkSizeZ, localWorkSize,
+					localWorkSize, localWorkSize).putBarrier()
+			.putReadBuffer(result, true)
+			.finish();
+	
+		
+		// write result back
+		result.getBuffer().rewind();
+		for (int i = 0; i < this.getBuffer().length; ++i) {
+			this.getBuffer()[i] = result.getBuffer().get();
+		}
+
+		// clean up
+		queue.release();
+		imageBuffer.release();
+		result.release();
+		kernel.release();
+		program.release();
+		context.release();
+			
+		return;
+		
+	}
+	
 }

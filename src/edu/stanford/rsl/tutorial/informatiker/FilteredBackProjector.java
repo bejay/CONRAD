@@ -43,7 +43,7 @@ public class FilteredBackProjector extends Grid2D {
 		
 		long t0 = System.nanoTime();
 		
-		backproject();
+//		backproject();
 		
 		long t1 = System.nanoTime();
 		long diff = t1 - t0;
@@ -161,7 +161,7 @@ public class FilteredBackProjector extends Grid2D {
 		int localWorkSize = Math.min(device.getMaxWorkGroupSize(), 8); // Local work size dimensions
 		int globalWorkSizeX = OpenCLUtil.roundUp(localWorkSize, this.getWidth()); // rounded up to the nearest multiple of localWorkSize
 		int globalWorkSizeY = OpenCLUtil.roundUp(localWorkSize, this.getHeight()); // rounded up to the nearest multiple of localWorkSize
-		int globalWorkSizeZ = OpenCLUtil.roundUp(localWorkSize, sinogram.getHeight()); // rounded up to the nearest multiple of localWorkSize
+//		int globalWorkSizeZ = OpenCLUtil.roundUp(localWorkSize, sinogram.getHeight()); // rounded up to the nearest multiple of localWorkSize
 			
 		// load sources, create and build program
 		CLProgram program = null;
@@ -183,6 +183,8 @@ public class FilteredBackProjector extends Grid2D {
 
 		// create memory for result
 		CLBuffer<FloatBuffer> result = context.createFloatBuffer(this.getSize()[0]*this.getSize()[1], Mem.WRITE_ONLY);
+//		result.getBuffer().put(new float[]{this.getSize()[0]*this.getSize()[1]});
+//		result.getBuffer().rewind();
 
 		// copy params
 		CLKernel kernel = program.createCLKernel("backproject");
@@ -202,12 +204,14 @@ public class FilteredBackProjector extends Grid2D {
 		queue
 			.putWriteBuffer(imageBuffer, true)
 			.finish()
-			.put3DRangeKernel(kernel, 0, 0, 0, globalWorkSizeX, globalWorkSizeY, globalWorkSizeZ, localWorkSize,
-					localWorkSize, localWorkSize).putBarrier()
+//			.put3DRangeKernel(kernel, 0, 0, 0, globalWorkSizeX, globalWorkSizeY, globalWorkSizeZ, localWorkSize,
+//					localWorkSize, localWorkSize).putBarrier()
+			.put2DRangeKernel(kernel, 0, 0, globalWorkSizeX, globalWorkSizeY, localWorkSize,
+					localWorkSize).putBarrier()
 			.putReadBuffer(result, true)
 			.finish();
-	
-		
+			
+				
 		// write result back
 		result.getBuffer().rewind();
 		for (int i = 0; i < this.getBuffer().length; ++i) {

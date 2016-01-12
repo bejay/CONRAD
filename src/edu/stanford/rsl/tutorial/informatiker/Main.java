@@ -32,7 +32,7 @@ public class Main {
 		
 		
 		/*--- TIME MEASURING ----------------------------------------------*/
-		int iterations = 100;
+//		int iterations = 100;
 		
 		/* CPU --- TIME MEASURING */
 //		cpuAdd(iterations, phantom);
@@ -55,16 +55,16 @@ public class Main {
 		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter);
 //		
 //		/* RAMLAKFILTER --- Filter defined in Spatial Domain */
-////		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
+//		RamLak rampfilter_spatial = new RamLak( numDetectorPixels, detectorSpacing );
 //
-////		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter_spatial);
+//		FilteredBackProjector filterbackprojector = new FilteredBackProjector(backprojectSizeX, backprojectSizeY, backprojectSpacingX, backprojectSpacingY, detector, rampfilter_spatial);
 //
 //		// SHOW RESULTS
-//		detector.show("Sinogram Original");
+		detector.show("Sinogram Original");
 //		rampfilter.getRealSubGrid(0, rampfilter.getSize()[0]).show("RampFilter");
 		filterbackprojector.show("Backprojection_ramp");
-////		rampfilter_spatial.getMagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
-////		filterbackprojector.show("Backprojection_ramlak");
+//		rampfilter_spatial.getMagSubGrid(0, rampfilter_spatial.getSize()[0]).show("Ramlak");
+//		filterbackprojector.show("Backprojection_ramlak");
 //		
 //		/* CONE BEAM RECONSTRUCTION */
 //		double rotationAngleIncrement = 1.0 * Math.PI / 180.0;
